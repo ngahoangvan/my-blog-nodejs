@@ -1,0 +1,16 @@
+version: "2"
+services:
+  mysql:
+    image: "mysql:5.7"
+    container_name: mysqldb
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+      - ./mysql_backup:/backups
+    environment:
+      - MYSQL_DATABASE=myblog
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=123123
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - "33061:3306"
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']

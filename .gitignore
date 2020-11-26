@@ -22,3 +22,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 yarn.lock
+
+# MySQL
+mysql_backup
+mysql_data

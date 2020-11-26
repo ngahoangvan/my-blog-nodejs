@@ -1,0 +1,55 @@
+import { Request, Response } from "express";
+import { userGetAllAction, userGetByIDAction, userSaveAction } from "./controllers/UserController";
+
+const PostRoutes = [
+    // For Post
+    {
+        path: "/posts",
+        method: "get",
+        // action: postGetAllAction
+        action: async (request: Request, response: Response) => {
+            response.send({ success: true })
+        }
+    },
+    {
+        path: "/posts/:id",
+        method: "get",
+        // action: postGetByIdAction
+    },
+    {
+        path: "/posts",
+        method: "post",
+        // action: postSaveAction
+    }
+]
+
+// For User
+const UserRoutes = [
+    {
+        path: "/users",
+        method: "get",
+        // action: postGetAllAction
+        action: userGetAllAction
+    },
+    {
+        path: "/users/:id",
+        method: "get",
+        // action: postGetAllAction
+        action: userGetByIDAction
+    },
+    {
+        path: "/users",
+        method: "post",
+        // action: postGetAllAction
+        action: userSaveAction
+    },
+]
+
+/**
+ * All application routes.
+ */
+export const AppRoutes = [
+    // For User
+    ...PostRoutes,
+    ...UserRoutes
+];
