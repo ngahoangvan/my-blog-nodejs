@@ -3,6 +3,7 @@ import { getManager } from "typeorm";
 import { User } from "../../entity/User";
 import { ERRORS_CODE } from "../commnons/constants";
 import * as bcrypt from "bcrypt"
+import * as helpers from '../helpers'
 import { validate } from "class-validator";
 
 
@@ -29,8 +30,11 @@ export async function getOneById(request: Request, response: Response) {
     const userRepository = getManager().getRepository(User);
     // load a user by a given user id
     const user = await userRepository.findOne(request.params.id);
-    user ? response.send(user) : response.status(404).send(ERRORS_CODE.DOES_NOT_EXITS)
+    user
+        ? helpers.sendResponse(response, 200, user)
+        : helpers.sendError(response, ERRORS_CODE.DOES_NOT_EXITS.message, 404)
 }
+
 
 /**
  * Create user.
@@ -41,19 +45,7 @@ export async function newUser(request: Request, response: Response) {
         const userRepository = getManager().getRepository(User);
 
         // paste data into user
-        const data: User = request.body;
-
-        const errors = await validate(data);
-        if (errors.length > 0) {
-            response.status(400).send(errors.map((element: any) => {
-                return {
-                    property: element.property,
-                    constraints: element.constraints
-                }
-            }));
-            return;
-        }
-
+        const data = request.body;
         let user = new User();
         // user = request.body;
         user.firstName = data.firstName;
@@ -64,14 +56,18 @@ export async function newUser(request: Request, response: Response) {
         user.username = data.username;
         user.password = data.password;
         // create a real user object from user json object sent over http
+        const errors = await validate(user);
+        if (errors.length > 0) {
+            return helpers.sendErrorValidate(response, errors)
+        }
         user.hashPassword()
 
         // save received user
         await userRepository.save(user);
         // return saved user back
-        response.status(201).send(user);
+        return helpers.sendResponse(response, 201, user)
     } catch (error) {
-        response.status(400).send(error)
+        return helpers.sendError(response, error)
     }
 }
 

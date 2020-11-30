@@ -1,6 +1,6 @@
 import {
     Entity, PrimaryGeneratedColumn, Column,
-    OneToMany, Unique
+    OneToMany, Unique, getRepository, BeforeInsert, BeforeUpdate
 } from "typeorm"
 import { Comment } from "./Comment";
 import { Post } from "./Post";
@@ -9,8 +9,9 @@ import bcrypt from "bcryptjs"
 import {
     Contains, IsNotEmpty, IsInt,
     Length, IsEmail, IsFQDN,
-    IsDate, Min, Max
+    IsDate, Min, Max, validateOrReject
 } from "class-validator";
+import { UniqueOnDatabase } from "../rest/middlewares/UniqueValidation";
 
 
 @Entity()
@@ -45,12 +46,14 @@ export class User {
         type: "varchar",
         length: 15,
     })
+    @UniqueOnDatabase(User)
     mobile?: string;
 
     @Column({
         type: "varchar",
         length: 50,
     })
+    @UniqueOnDatabase(User)
     email?: string;
 
     @Column({
@@ -58,6 +61,7 @@ export class User {
         length: 50,
     })
     @Length(8, 20)
+    @UniqueOnDatabase(User)
     username!: string;
 
     @Column({
